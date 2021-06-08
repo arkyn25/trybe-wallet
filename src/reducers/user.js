@@ -6,8 +6,8 @@ const INITIAL_STATE = {
 
 const user = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case xxxx:
-    return { ...state, xxxx: action.xxxx };
+  // case xxxx:
+  //   return { ...state, xxxx: action.xxxx };
   default:
     return state;
   }

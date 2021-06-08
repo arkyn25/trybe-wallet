@@ -7,13 +7,13 @@ const INITIAL_STATE = {
 
 const wallet = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case XXXX:
-    return { ...state,
-    expenses: xxx.expenses. };
+  // case XXXX:
+  //   return { ...state,
+  //   expenses: xxx.expenses. };
 
   default:
     return state;
   }
-}
+};
 
 export default wallet;
