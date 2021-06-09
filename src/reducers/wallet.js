@@ -1,21 +1,36 @@
 // Esse reducer será responsável por tratar o todas as informações relacionadas as despesas
-import { ADD_EXPENSE, FETCH_CURRENCIES } from '../actions/index';
+import { ADD_EXPENSE, REQUEST_API, GET_QUOTES } from '../actions/index';
 
 const INITIAL_STATE = {
-
   currencies: [],
   expenses: [],
+  loading: false,
 };
 
 const wallet = (state = INITIAL_STATE, action) => {
   switch (action.type) {
+  case REQUEST_API:
+    return {
+      ...state,
+      loading: true,
+    };
+  case GET_QUOTES:
+    return {
+      ...state,
+      loading: false,
+      currencies: action.data,
+    };
   case ADD_EXPENSE:
     return { ...state,
-      expenses: state.expenses.concat(action.payload) };
-  case FETCH_CURRENCIES:
-    return { ...state,
-      currencies: Object.keys(action.payload)
-        .filter((item) => item !== 'USDT') };
+      loading: false,
+      expenses: [
+        ...sate.expenses,
+        {
+          ...action.state,
+          exchangeRates: state.currencies,
+        },
+      ],
+    };
   default:
     return state;
   }

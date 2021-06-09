@@ -1,5 +1,7 @@
 // Coloque aqui suas actions
 export const LOGIN = 'LOGIN';
+export const REQUEST_API = 'REQUEST_API';
+export const GET_QUOTES = 'GET_QUOTES';
 export const ADD_EXPENSE = 'ADD_EXPENSE';
 export const FETCH_CURRENCIES = 'FETCH_CURRENCIES';
 
@@ -8,7 +10,16 @@ export const salvarLogin = (email) => ({
   email,
 });
 
-export const addExpenses = (payload) => ({
+export const requestAPI = () => ({
+  type: REQUEST_API,
+});
+
+export const getQuotes = (data) => ({
+  type: GET_QUOTES,
+  data,
+});
+
+export const addExpense = (payload) => ({
   type: ADD_EXPENSE,
   payload,
 });
@@ -18,12 +29,13 @@ export const fetchCurrencies = (currencies) => ({
   payload: currencies,
 });
 
-export async function requestCurrencies() {
-  try {
-    const response = await fetch('https://economia.awesomeapi.com.br/json/all');
-    const json = await response.json();
-    return json;
-  } catch (error) {
-    console.log(error);
-  }
+export function fetchAPI() {
+  return (dispatch) => {
+    dispatch(requestAPI());
+    return fetch('https://economia.awesomeapi.com.br/json/all')
+      .then((response) => response.json()
+        .then(
+          (json) => dispatch(getQuotes(json)),
+        ));
+  };
 }

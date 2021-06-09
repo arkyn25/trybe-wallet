@@ -1,123 +1,187 @@
 import React from 'react';
 import { connect } from 'react-redux';
-// import PropTypes from 'prop-types';
-// import { requestCurrencies, addExpense } from '../actions';
-
-const INITIAL_STATE = {
-  value: '',
-  description: '',
-  currency: '',
-  method: '',
-  tag: '',
-};
+import PropTypes from 'prop-types';
+import { fetchAPI, addExpense } from '../actions';
 
 class Expenses extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = INITIAL_STATE;
+  constructor() {
+    super();
 
-    this.renderValue = this.renderValue.bind(this);
-    this.renderDescription = this.renderDescription.bind(this);
-    this.renderMoeda = this.renderMoeda.bind(this);
-    this.renderPagamento = this.renderPagamento.bind(this);
-    this.renderTag = this.renderTag.bind(this);
+    this.state = {
+      id: 0,
+      value: 0,
+      currency: 'USD',
+      method: 'Dinheiro',
+      tag: 'Alimentação',
+      description: '',
+    };
+
+    this.renderizaSelectMoeda = this.renderMoeda.bind(this);
+    this.renderizaSelectPgto = this.renderMethod.bind(this);
+    this.renderizaSelectTag = this.renderTag.bind(this);
+    this.renderizaInput = this.renderInput.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  renderValue(value) {
-    return (
-      <label htmlFor="valor">
-        Valor:
-        <input
-          value={ value }
-          name="value"
-          id="valor"
-        />
-      </label>
-    );
+  componentDidMount() {
+    const { getCurrency } = this.props;
+    getCurrency();
   }
 
-  renderDescription(value) {
+  handleClick() {
+    const { addDespesas, getCurrency } = this.props;
+
+    this.setState((previousState) => ({
+      id: previousState.id + 1,
+      value: 0,
+      description: '',
+    }));
+
+    addDespesas(this.state);
+    getCurrency();
+  }
+
+  renderInput() {
+    const { value } = this.state;
     return (
-      <label htmlFor="descrição">
-        Descrição:
-        <input
-          value={ value }
-          name="description"
-          id="descrição"
-        />
-      </label>
+      <input
+        type="text"
+        data-testid="value-input"
+        id="valor"
+        value={ value }
+        onChange={ (e) => this.setState({ value: e.target.value }) }
+      />
     );
   }
 
   renderMoeda() {
+    const { currencies, loading } = this.props;
+    const { currency } = this.state;
     return (
-      <label htmlFor="moeda">
-        {' '}
-        Moeda
-        <select name="moeda" id="moeda">
-          <option value="temporary">Temporary</option>
-        </select>
-      </label>
+      <select
+        data-testid="currency-input"
+        id="moeda"
+        value={ currency }
+        onChange={ (e) => this.setState({ currency: e.target.value }) }
+      >
+        { loading ? null : Object.keys(currencies).filter(
+          (result) => result !== 'USDT',
+        ).map((result, index) => (
+          <option
+            key={ index }
+            value={ result }
+            data-testid={ result }
+          >
+            { result }
+          </option>
+        ))}
+      </select>
     );
   }
 
-  renderPagamento(value) {
+  renderMethod() {
+    const { method } = this.state;
     return (
-      <label htmlFor="metodoDePagamento">
-        {' '}
-        Método de Pagamento
-        <select
-          value={ value }
-          name="method"
-          id="metodoDePagamento"
+      <select
+        data-testid="method-input"
+        value={ method }
+        id="pgto"
+        onChange={ (e) => this.setState({ method: e.target.value }) }
+      >
+        <option key="dinheiro" value="Dinheiro">Dinheiro</option>
+        <option
+          key="Cartão de crédito"
+          value="Cartão de crédito"
         >
-          <option>Selecione uma opção</option>
-          <option>Dinheiro</option>
-          <option>Cartão de crédito</option>
-          <option>Cartão de débito</option>
-        </select>
-      </label>
-
+          Cartão de crédito
+        </option>
+        <option value="Cartão de débito" key="Cartão de débito">Cartão de débito</option>
+      </select>
     );
   }
 
-  renderTag(value) {
+  renderTag() {
+    const { tag } = this.state;
     return (
-      <label htmlFor="tag">
-        Tag
-        <select
-          value={ value }
-          name="tag"
-          id="tag"
-        >
-          <option>Selecione uma opção</option>
-          <option>Alimentação</option>
-          <option>Lazer</option>
-          <option>Trabalho</option>
-          <option>Transporte</option>
-          <option>Saúde</option>
-        </select>
-      </label>
+      <select
+        data-testid="tag-input"
+        value={ tag }
+        id="tag"
+        onChange={ (e) => this.setState({ tag: e.target.value }) }
+      >
+        <option value="Alimentação">Alimentação</option>
+        <option value="Lazer">Lazer</option>
+        <option value="Trabalho">Trabalho</option>
+        <option value="Transporte">Transporte</option>
+        <option value="Saúde">Saúde</option>
+      </select>
     );
   }
 
   render() {
-    const { value, description, currency, method, tag } = this.state;
+    const { description } = this.state;
     return (
       <div>
-        <form>
-          { this.renderValue(value) }
-          { this.renderDescription(description) }
-          { this.renderMoeda(currency) }
-          { this.renderPagamento(method) }
-          { this.renderTag(tag) }
-        </form>
+        <label htmlFor="valor">
+          Valor
+          {this.renderInput()}
+        </label>
+        <label
+          htmlFor="moeda"
+        >
+          Moeda
+          {this.renderMoeda()}
+        </label>
+        <label
+          htmlFor="pgto"
+        >
+          Método de pagamento
+          {this.renderMethod()}
+        </label>
+        <label
+          htmlFor="tag"
+        >
+          Tag
+          {this.renderTag()}
+        </label>
+        <label htmlFor="descricao">
+          Descrição
+          <input
+            type="text"
+            id="descricao"
+            data-testid="description-input"
+            value={ description }
+            onChange={ (e) => this.setState({ description: e.target.value }) }
+          />
+        </label>
+        <button
+          type="button"
+          onClick={ this.handleClick }
+        >
+          Adicionar despesa
+        </button>
       </div>
     );
   }
 }
+
 const mapStateToProps = (state) => ({
   currencies: state.wallet.currencies,
+  loading: state.wallet.loading,
 });
 
-export default connect(mapStateToProps)(Expenses);
+const mapDispatchToProps = (dispatch) => ({
+  getCurrency: () => dispatch(fetchAPI()),
+  addDespesas: (state) => dispatch(
+    addExpense(state),
+  ),
+});
+
+Expenses.propTypes = {
+  currencies: PropTypes.arrayOf(PropTypes.object).isRequired,
+  getCurrency: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  addDespesas: PropTypes.func.isRequired,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Expenses);
