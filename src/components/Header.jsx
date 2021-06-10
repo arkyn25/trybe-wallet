@@ -12,13 +12,17 @@ class Header extends React.Component {
         <h1>Trybe Wallet</h1>
         <span data-testid="email-field">{`${email}`}</span>
         <br />
-        <span data-testid="header-currency-field">BRL</span>
         <span data-testid="total-field">
+          Total despesas
+          {' '}
+          {' R$ '}
           { expenses.reduce((acc, curr) => {
             const { ask } = curr.exchangeRates[curr.currency];
             const expense = ask * curr.value;
             return acc + expense;
           }, 0).toFixed(2)}
+          {' '}
+          <span data-testid="header-currency-field">BRL</span>
         </span>
       </header>
     );

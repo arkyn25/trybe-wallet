@@ -4,6 +4,8 @@ export const REQUEST_API = 'REQUEST_API';
 export const GET_QUOTES = 'GET_QUOTES';
 export const ADD_EXPENSE = 'ADD_EXPENSE';
 export const FETCH_CURRENCIES = 'FETCH_CURRENCIES';
+export const DELETE_BTN = 'DELETE_BTN';
+export const EDIT_BUTTON = 'EDIT_BUTTON';
 
 export const salvarLogin = (email) => ({
   type: LOGIN,
@@ -22,6 +24,16 @@ export const getQuotes = (data) => ({
 export const addExpense = (payload) => ({
   type: ADD_EXPENSE,
   payload,
+});
+
+export const deleteBtn = (id) => ({
+  type: DELETE_BTN,
+  id,
+});
+
+export const editButton = (id) => ({
+  type: EDIT_BUTTON,
+  id,
 });
 
 export const fetchCurrencies = (currencies) => ({

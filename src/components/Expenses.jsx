@@ -14,6 +14,7 @@ class Expenses extends React.Component {
       method: 'Dinheiro',
       tag: 'Alimentação',
       description: '',
+      exchangeRates: '',
     };
 
     this.renderizaSelectMoeda = this.renderMoeda.bind(this);
@@ -31,8 +32,8 @@ class Expenses extends React.Component {
   handleClick() {
     const { addDespesas, getCurrency } = this.props;
 
-    this.setState((previousState) => ({
-      id: previousState.id + 1,
+    this.setState((prev) => ({
+      id: prev.id + 1,
       value: 0,
       description: '',
     }));
