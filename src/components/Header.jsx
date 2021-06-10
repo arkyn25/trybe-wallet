@@ -1,42 +1,56 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-class Header extends React.Component {
+class Header extends Component {
+  constructor(props) {
+    super(props);
+    this.total = this.total.bind(this);
+  }
+
+  total() {
+    const { expenses } = this.props;
+    const result = expenses.reduce(
+      (acc, curr) => acc + (curr.exchangeRates[curr.currency].ask * curr.value),
+      0,
+    );
+    return parseFloat(result).toFixed(2);
+  }
+
   render() {
-    const { email, expenses } = this.props;
+    const { email } = this.props;
     return (
-      <header
-        className="wallet-info"
-      >
-        <h1>Trybe Wallet</h1>
-        <span data-testid="email-field">{`${email}`}</span>
-        <br />
-        <span data-testid="total-field">
-          Total despesas
-          {' '}
-          {' R$ '}
-          { expenses.reduce((acc, curr) => {
-            const { ask } = curr.exchangeRates[curr.currency];
-            const expense = ask * curr.value;
-            return acc + expense;
-          }, 0).toFixed(2)}
-          {' '}
-          <span data-testid="header-currency-field">BRL</span>
-        </span>
-      </header>
+      <main className="header-page">
+        <header>
+          <section className="user-info" data-testid="email-field">
+            Usuário:
+            {' '}
+            {email}
+          </section>
+          <section className="user-money">
+            Despesas totais: R$
+            {' '}
+            <span data-testid="total-field">
+              {' '}
+              {this.total()}
+              {' '}
+            </span>
+            <span data-testid="header-currency-field">BRL</span>
+          </section>
+        </header>
+      </main>
     );
   }
 }
-
-const mapStateToProps = (state) => ({
-  email: state.user.email,
-  expenses: state.wallet.expenses,
-});
 
 Header.propTypes = {
   email: PropTypes.string.isRequired,
   expenses: PropTypes.arrayOf(Object).isRequired,
 };
+
+const mapStateToProps = ({ user, wallet }) => ({
+  email: user.email,
+  expenses: wallet.expenses,
+});
 
 export default connect(mapStateToProps)(Header);

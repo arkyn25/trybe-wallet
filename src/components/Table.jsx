@@ -1,24 +1,21 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { deleteBtn, editButton } from '../actions';
+import { PropTypes } from 'prop-types';
+import { deletButton } from '../actions';
 
-class Table extends React.Component {
-  constructor() {
-    super();
-
-    this.renderTable = this.renderTable.bind(this);
+class Table extends Component {
+  deletExpenses(expId) {
+    const { deletItem, expenses } = this.props;
+    const expenseList = expenses.filter((expense) => expense.id !== expId);
+    deletItem(expenseList);
   }
 
   renderTable() {
-    const { expenses, deleteItem } = this.props;
+    const { expenses } = this.props;
 
-    return expenses.map((item) => {
+    return expenses.map((expense) => {
       const { id, description, tag,
-        method, value, currency, exchangeRates } = item;
-
-      const totalValue = exchangeRates[currency].ask * value;
-
+        method, value, currency, exchangeRates } = expense;
       return (
         <tr key={ id }>
           <td>{description}</td>
@@ -26,23 +23,25 @@ class Table extends React.Component {
           <td>{method}</td>
           <td>{value}</td>
           <td>{exchangeRates[currency].name.split('/')[0]}</td>
-          <td>{parseFloat(exchangeRates[currency].ask).toFixed(2)}</td>
-          <td>{parseFloat(totalValue).toFixed(2)}</td>
+          <td>{Number(exchangeRates[currency].ask).toFixed(2)}</td>
+          <td>
+            {Number(value * exchangeRates[currency].ask)
+              .toFixed(2)}
+          </td>
           <td>Real</td>
           <td>
             <button
               type="button"
-              data-testid="delete-btn"
-              onClick={ () => { deleteItem(id); } }
+              data-testid="edit-btn"
             >
-              Excluir
+              Edit
             </button>
             <button
               type="button"
-              data-testid="edit-btn"
-              onClick={ () => { editButton(item, true); } }
+              data-testid="delete-btn"
+              onClick={ () => this.deletExpenses(id) }
             >
-              Editar
+              Delete
             </button>
           </td>
         </tr>
@@ -52,41 +51,37 @@ class Table extends React.Component {
 
   render() {
     return (
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Descrição</th>
-              <th>Tag</th>
-              <th>Método de pagamento</th>
-              <th>Valor</th>
-              <th>Moeda</th>
-              <th>Câmbio utilizado</th>
-              <th>Valor convertido</th>
-              <th>Moeda de conversão</th>
-              <th>Editar/Excluir</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.renderTable()}
-          </tbody>
-        </table>
-      </div>
+      <table border="1" rules="ROWS">
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th>Tag</th>
+            <th>Método de pagamento</th>
+            <th>Valor</th>
+            <th>Moeda</th>
+            <th>Câmbio utilizado</th>
+            <th>Valor convertido</th>
+            <th>Moeda de conversão</th>
+            <th>Editar/Excluir</th>
+          </tr>
+        </thead>
+        <tbody>
+          { this.renderTable() }
+        </tbody>
+      </table>
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  expenses: state.wallet.expenses,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  deleteItem: (id) => dispatch(deleteBtn(id)),
-});
-
 Table.propTypes = {
   expenses: PropTypes.arrayOf(Object).isRequired,
-  deleteItem: PropTypes.func.isRequired,
+  deletItem: PropTypes.func.isRequired,
 };
+
+const mapStateToProps = ({ wallet: { expenses } }) => ({ expenses });
+
+const mapDispatchToProps = (dispatch) => ({
+  deletItem: (expense) => dispatch(deletButton(expense)),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Table);
