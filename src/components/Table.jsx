@@ -4,49 +4,51 @@ import { PropTypes } from 'prop-types';
 import { deletButton } from '../actions';
 
 class Table extends Component {
-  deletExpenses(expId) {
-    const { deletItem, expenses } = this.props;
-    const expenseList = expenses.filter((expense) => expense.id !== expId);
-    deletItem(expenseList);
+  constructor(props) {
+    super(props);
+    this.renderTable = this.renderTable.bind(this);
   }
 
   renderTable() {
-    const { expenses } = this.props;
-
-    return expenses.map((expense) => {
-      const { id, description, tag,
-        method, value, currency, exchangeRates } = expense;
-      return (
-        <tr key={ id }>
-          <td>{description}</td>
-          <td>{tag}</td>
-          <td>{method}</td>
-          <td>{value}</td>
-          <td>{exchangeRates[currency].name.split('/')[0]}</td>
-          <td>{Number(exchangeRates[currency].ask).toFixed(2)}</td>
-          <td>
-            {Number(value * exchangeRates[currency].ask)
-              .toFixed(2)}
-          </td>
-          <td>Real</td>
-          <td>
-            <button
-              type="button"
-              data-testid="edit-btn"
-            >
-              Edit
-            </button>
-            <button
-              type="button"
-              data-testid="delete-btn"
-              onClick={ () => this.deletExpenses(id) }
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
-      );
-    });
+    const { expenses, deletItem } = this.props;
+    return expenses.map((item) => (
+      <tr key={ item.id }>
+        <td>{item.description}</td>
+        <td>{item.tag}</td>
+        <td>{item.method}</td>
+        <td>{item.value}</td>
+        <td>{item.exchangeRates[item.currency].name.split('/')[0]}</td>
+        <td>{Number(item.exchangeRates[item.currency].ask).toFixed(2)}</td>
+        <td>
+          {Number(item.value * item.exchangeRates[item.currency].ask)
+            .toFixed(2)}
+        </td>
+        <td>Real</td>
+        <td>
+          <button
+            type="button"
+            data-testid="edit-btn"
+          >
+            <img
+              src="https://icon-library.com/images/icon-edit-png/icon-edit-png-0.jpg"
+              height="20px"
+              alt="Edit button"
+            />
+          </button>
+          <button
+            type="button"
+            data-testid="delete-btn"
+            onClick={ () => deletItem(item.id) }
+          >
+            <img
+              src="https://icon-library.com/images/trash-icon/trash-icon-16.jpg"
+              height="20px"
+              alt="Delete button"
+            />
+          </button>
+        </td>
+      </tr>
+    ));
   }
 
   render() {
@@ -76,12 +78,17 @@ class Table extends Component {
 Table.propTypes = {
   expenses: PropTypes.arrayOf(Object).isRequired,
   deletItem: PropTypes.func.isRequired,
+  // editExpenses: PropTypes.arrayOf(PropTypes.object).isRequired,
+  editExpense: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = ({ wallet: { expenses } }) => ({ expenses });
+const mapStateToProps = (state) => ({
+  // editExpenses: state.wallet.expenses,
+  expenses: state.wallet.expenses,
+});
 
 const mapDispatchToProps = (dispatch) => ({
-  deletItem: (expense) => dispatch(deletButton(expense)),
+  deletItem: (id) => dispatch(deletButton(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Table);

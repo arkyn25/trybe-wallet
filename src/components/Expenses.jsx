@@ -47,6 +47,10 @@ class Expenses extends Component {
     this.setState({ exchangeRates: fetched });
   }
 
+  cleanForm() {
+    document.getElementById('form1').reset();
+  }
+
   renderCoin() {
     const { currencies } = this.props;
     if (currencies === '') {
@@ -63,14 +67,14 @@ class Expenses extends Component {
     return (<input
       type="button"
       value="Adicionar despesa"
-      onClick={ this.HandleClick }
+      onClick={ () => { this.cleanForm(); this.HandleClick(); } }
     />);
   }
 
   render() {
     return (
       <div>
-        <form>
+        <form id="form1">
           <label htmlFor="value">
             Valor:
             <input type="number" id="value" onChange={ this.handleChange } />

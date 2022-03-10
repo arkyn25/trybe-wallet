@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { salvarLogin } from '../actions';
+import './Login.css';
 
 class Login extends React.Component {
   constructor(props) {
@@ -52,37 +53,40 @@ class Login extends React.Component {
     const { email, password, validarEmail, validarPassword } = this.state;
     const validarLogin = (validarEmail && validarPassword);
     return (
-      <div>
-        <h1>Login</h1>
-        <label htmlFor="email-input">
-          Email:
-          <input
-            data-testid="email-input"
-            type="email"
-            name="email"
-            onChange={ this.handleChange }
-            value={ email }
-          />
-        </label>
-        <label htmlFor="password-input">
-          Senha:
-          <input
-            data-testid="password-input"
-            type="password"
-            name="password"
-            onChange={ this.handleChange }
-            value={ password }
-          />
-        </label>
-        <Link to="/carteira">
-          <button
-            type="button"
-            disabled={ !validarLogin }
-            onClick={ this.salvarLogin }
-          >
-            Entrar
-          </button>
-        </Link>
+      <div className="card">
+        <form onSubmit="event.preventDefault()" className="box">
+          <p className="text-muted"> Please enter your email and password!</p>
+          <h1>Login</h1>
+          <label htmlFor="email-input">
+            <input
+              data-testid="email-input"
+              type="email"
+              name="email"
+              placeholder="Email"
+              onChange={ this.handleChange }
+              value={ email }
+            />
+          </label>
+          <label htmlFor="password-input">
+            <input
+              data-testid="password-input"
+              type="password"
+              name="password"
+              placeholder="Password"
+              onChange={ this.handleChange }
+              value={ password }
+            />
+          </label>
+          <Link to="/carteira">
+            <button
+              type="button"
+              disabled={ !validarLogin }
+              onClick={ this.salvarLogin }
+            >
+              Entrar
+            </button>
+          </Link>
+        </form>
       </div>
     );
   }
